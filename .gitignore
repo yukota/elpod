@@ -55,3 +55,12 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# config file
+config.py
+
+# courpus
+corpus/
+*.bz2
+
+*.db
