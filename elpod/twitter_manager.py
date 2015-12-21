@@ -3,6 +3,7 @@ import twitter
 import re
 import glob
 import json
+import logging
 from dateutil import parser
 from storage import Storage
 
@@ -19,7 +20,8 @@ class Twitter:
                                  access_token_secret=access_token_secret)
 
     def post(self, message):
-        self.__api.PostUpdate(message)
+        logging.info("post to twitter:%s" % message)
+        #self.__api.PostUpdate(message)
 
     def update_status(self, screen_name):
         """

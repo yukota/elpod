@@ -3,6 +3,7 @@
 from cytoolz import sliding_window
 from itertools import chain, permutations
 from collections import namedtuple
+import logging
 import os
 
 from natto import MeCab
@@ -22,7 +23,7 @@ class Sentence:
 
 
     def learn(self, sentences):
-        print("learn")
+        logging.debug("learn")
         posid_list = self._get_posid_seq(sentences)
 
         # create grammer network.
@@ -31,6 +32,7 @@ class Sentence:
 
 
     def generate(self, similar_words):
+        logging.debug("generate{0}".format(similar_words))
         posids = self._get_posid(similar_words)
         construnts = []
         for posid in posids:
@@ -43,12 +45,14 @@ class Sentence:
         for pos_via_point in pos_via_points:
             # costが低い方が発生率が高い
             cost, path = self._search_grammer_path(pos_via_point)
-            print(path)
             sentence = ''
             for node in path:
                 sentence += node.surface
-            print(cost)
-            print(sentence)
+            logging.debug("---------found paths---------")
+            logging.debug("path:{0}".format(path))
+            logging.debug("cost:{0}".format(cost))
+            logging.debug("sentence:{0}".format(sentence))
+            logging.debug("---------found paths---------")
             sentences.append((cost, sentence))
 
         # コスト最小のものを選択
@@ -56,7 +60,6 @@ class Sentence:
         return generated[1]
 
     def _search_grammer_path(self, pos_via_point):
-        print(pos_via_point)
         pos_via_and_end = (self.START_NODE,) + pos_via_point + (self.END_NODE,)
         paths = []
         cost = 0
@@ -102,13 +105,10 @@ class Sentence:
                 one_work_posid = [self.START_NODE]
                 for word in words:
                     node = self.Node(posid=word.posid, surface=word.surface)
-                    # print("{}\t{}".format(word.surface, word.posid))
                     one_work_posid.append(node)
 
                 one_work_posid.append(self.END_NODE)
                 posid_list.append(one_work_posid)
-                # posid_list.append([word.posid for word in words])
-                # print([word.surface for word in words])
         return posid_list
 
     def _get_posid(self, words):

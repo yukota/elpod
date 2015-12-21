@@ -8,7 +8,7 @@ from sentence import Sentence
 
 import config as config
 
-logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 
 if __name__ == '__main__':
     # update mimicry model tweet
@@ -19,15 +19,14 @@ if __name__ == '__main__':
     # setup natural language recognition env.
     message = twitter.get_latest_status_text(config.MIMICRY_MODEL)
     if message is None:
-        print("ERROR")
+        logging.error("Mimicry target's tweet is None.")
+        exit()
     semantics = Semantics()
     similar_words = semantics.get_similar_words(message)
-    #similar_words = ['少女','結婚']
     train_posts = twitter.get_all_status_text()
     sentence = Sentence()
     sentence.learn(train_posts)
     generated_message = sentence.generate(similar_words)
-    print(generated_message)
     twitter.post(generated_message)
 
 
